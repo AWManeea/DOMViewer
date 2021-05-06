@@ -109,6 +109,7 @@ function mouseMove(e) {
             if (tree[i].mouseDown) {
                 canvas.style.cursor = "grabbing"
                 tree[i].updateX(e.offsetX)
+                tree[i].updateY(e.offsetY)
             } else {
                 tree[i].onMouseHover()
                 redraw(root)

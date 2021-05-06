@@ -13,33 +13,33 @@ let textColor = "#dddddd"
 
 const nodeStyles = {
     regular: "#FFE900",
-    hover: "#FEF47C",
+    hover: "#FFFFAC",
     click: "#F9BE00",
 }
 
 
 const textStyles = {
     regular: "#58B8B6",
-    hover: "#8FD0CC",
+    hover: "#8FFFFF",
     click: "#21A0A0",
 }
 
 const leafStyles = {
     regular: "#EC6800",
-    hover: "#F29300",
+    hover: "#FFB350",
     click: "#E53D00",
 }
 
 const expansionStyle = {
     regular: "#ECD388",
-    hover: "#F6E27F",
+    hover: "#F0E0B0",
     click: "#E7CB8D",
 }
 
 const attributesStyle = {
-    regular: "#9BBEC7",
-    hover: "#A4C4CC",
-    click: "#A2BBB9",
+    regular: "#F7FCFC",
+    hover: "#C5C9C9",
+    click: "#7A7D7D",
 }
 
 const tagNames = [

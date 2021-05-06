@@ -79,7 +79,7 @@ class CanvasNode {
         context.fillStyle = this.currentColor
         context.beginPath();
         if (this.element.nodeType == Node.TEXT_NODE) {
-            context.rect(this.x - circleSize, this.y - circleSize / 2, circleSize * 2, circleSize);
+            context.rect(this.x - circleSize*2, this.y - circleSize / 2, circleSize * 4, circleSize*1.25);
             context.fill();
         } else {
             context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
@@ -91,9 +91,11 @@ class CanvasNode {
         var nodeName = this.element.nodeName.replace(/#/g, '')
         if (nodeName == "text") {
             var d = this.element.data.trim()
-            nodeName = d.length > 10 ? d.substring(0, 4) + "..." : d
+            nodeName = d.length > 10 ? d.substring(0, 7) + "..." : d
+        } else {
+            nodeName = nodeName.toLowerCase()
         }
-        context.fillText(nodeName.toLowerCase(), this.x, this.y);
+        context.fillText(nodeName, this.x, this.y);
         context.fill();
 
         this.drawExpansionToggle(context)
@@ -292,6 +294,11 @@ class CanvasNode {
 
     updateX(x){
         this.x = x;
+        this.showPrompt = false;
+    }
+
+    updateY(y){
+        this.y = y;
         this.showPrompt = false;
     }
 
