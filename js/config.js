@@ -1,6 +1,6 @@
 let context = document.getElementById("canvas").getContext('2d');
 
-let circleSize = 40;
+let circleSize = 35;
 let circleMargin = 10;
 let screenPaddingPercentage = 1;
 let verticalOffset = 3;

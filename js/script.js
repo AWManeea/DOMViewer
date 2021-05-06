@@ -97,7 +97,10 @@ function mouseMove(e) {
         canvas.style.cursor = "default"
     }
     for (let i = 0; i < tree.length; i++) {
-        if (tree[i].attributesButtonContains(e.offsetX, e.offsetY)) {
+        // if(mouseDown) {
+
+        // } else
+         if (tree[i].attributesButtonContains(e.offsetX, e.offsetY)) {
             tree[i].onAttributesButtonMouseHover()
             redraw(root)
             return;
@@ -117,12 +120,12 @@ function mouseMove(e) {
 
 function mouseClick(e) {
     if (inSaveImage(e.offsetX, e.offsetY)) {
-        var anchor=document.createElement("a")
+        var anchor = document.createElement("a")
         anchor.setAttribute('download', 'MintyPaper.png');
         anchor.setAttribute('href', canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));
         document.getElementsByTagName("body")[0].appendChild(anchor)
         anchor.click()
-        
+
         // var dataURL = canvas.toDataURL("image/png");
         // var newTab = window.open('about:blank', 'image from canvas');
         // newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>")
@@ -148,6 +151,19 @@ function mouseClick(e) {
     redraw(root)
 }
 
+function mouseDown(e) {
+    for (let i = 0; i < tree.length; i++) {
+        if (tree[i].contains(e.offsetX, e.offsetY)) {
+            tree[i].onMouseClick()
+            return;
+        }
+    }
+}
+
+function mouseUp(e) {
+    
+}
+
 function inSaveImage(x, y) {
     return (
         x >= canvas.width - circleSize * 2 &&
@@ -157,4 +173,6 @@ function inSaveImage(x, y) {
 
 redraw();
 canvas.addEventListener("mousemove", mouseMove);
+// canvas.addEventListener("mouseup", mouseUp);
+// canvas.addEventListener("mousedown", mouseDown);
 canvas.addEventListener("click", mouseClick);

@@ -5,16 +5,17 @@ class CanvasNode {
     element;
     parent;
     children;
-    #visible;
-    #style
-    #expansionButtonStyle
-    #attributesButtonStyle
-    #currentColor
-    #expansionButtonCurrentColor
-    #attributesButtonCurrentColor
-    #mouseWasInExpandableButton
-    #mouseWasInAttributesButton
-    #mouseWasInNode
+    // mouse down
+    visible;
+    style
+    expansionButtonStyle
+    attributesButtonStyle
+    currentColor
+    expansionButtonCurrentColor
+    attributesButtonCurrentColor
+    mouseWasInExpandableButton
+    mouseWasInAttributesButton
+    mouseWasInNode
 
     constructor(element, parent = null, x = 0, y = 0, radius = circleSize) {
         this.element = element;
@@ -23,21 +24,21 @@ class CanvasNode {
         this.radius = radius;
         this.children = [];
         this.parent = parent;
-        this.#visible = true;
-        this.#mouseWasInExpandableButton = false;
-        this.#mouseWasInAttributesButton = false;
-        this.#mouseWasInNode = false;
-        this.#expansionButtonStyle = expansionStyle
-        this.#attributesButtonStyle = attributesStyle
-        this.#expansionButtonCurrentColor = this.#expansionButtonStyle["regular"]
-        this.#attributesButtonCurrentColor = this.#attributesButtonStyle["regular"]
+        this.visible = true;
+        this.mouseWasInExpandableButton = false;
+        this.mouseWasInAttributesButton = false;
+        this.mouseWasInNode = false;
+        this.expansionButtonStyle = expansionStyle
+        this.attributesButtonStyle = attributesStyle
+        this.expansionButtonCurrentColor = this.expansionButtonStyle["regular"]
+        this.attributesButtonCurrentColor = this.attributesButtonStyle["regular"]
         if (this.element.nodeType == Node.TEXT_NODE)
-            this.#style = textStyles;
+            this.style = textStyles;
         else if ("childNodes" in this.element && this.element.childNodes.length == 0)
-            this.#style = leafStyles;
+            this.style = leafStyles;
         else
-            this.#style = nodeStyles;
-        this.#currentColor = this.#style["regular"]
+            this.style = nodeStyles;
+        this.currentColor = this.style["regular"]
     }
 
     draw(context) {
@@ -47,18 +48,18 @@ class CanvasNode {
 
     recursiveDraw(context) {
         this.draw(context)
-        if (this.#visible)
+        if (this.visible)
             this.children.forEach(node => node.recursiveDraw(context))
     }
 
     hide() {
-        this.#visible = false;
+        this.visible = false;
         this.children.forEach(node => node.hide());
     }
 
     show() {
-        this.#visible = true;
-        this.children.forEach(node => { node.#visible = true; node.show(); });
+        this.visible = true;
+        this.children.forEach(node => { node.visible = true; node.show(); });
     }
 
     drawLineToParent(context) {
@@ -72,7 +73,7 @@ class CanvasNode {
     }
 
     drawElement(context) {
-        context.fillStyle = this.#currentColor
+        context.fillStyle = this.currentColor
         context.beginPath();
         if (this.element.nodeType == Node.TEXT_NODE) {
             context.rect(this.x - circleSize, this.y - circleSize / 2, circleSize * 2, circleSize);
@@ -93,7 +94,7 @@ class CanvasNode {
         context.fill();
 
         this.drawExpansionToggle(context)
-        this.#drawAttributesButton(context)
+        this.drawAttributesButton(context)
     }
 
     drawInnerHTML(context) {
@@ -148,19 +149,19 @@ class CanvasNode {
     drawExpansionToggle(context) {
         if (this.children.length == 0) return
         context.beginPath();
-        context.fillStyle = this.#expansionButtonCurrentColor
+        context.fillStyle = this.expansionButtonCurrentColor
         context.arc(this.x - this.radius * 1.25, this.y, this.radius / 2, 0, Math.PI * 2);
         context.fill();
         context.beginPath();
         context.fillStyle = "black";
-        context.fillText(this.#visible ? "-" : "+", this.x - this.radius * 1.25, this.y);
+        context.fillText(this.visible ? "-" : "+", this.x - this.radius * 1.25, this.y);
         context.fill()
     }
 
-    #drawAttributesButton(context) {
+    drawAttributesButton(context) {
         if (this.element.attributes == undefined || this.element.attributes.length == undefined || this.element.attributes.length == 0) return
         context.beginPath();
-        context.fillStyle = this.#attributesButtonCurrentColor
+        context.fillStyle = this.attributesButtonCurrentColor
         context.rect(this.x - this.radius * 1.5, this.y + this.radius / 2, this.radius, this.radius / 2);
         context.fill();
         context.beginPath();
@@ -182,65 +183,65 @@ class CanvasNode {
             y <= this.y + this.radius / 2 + this.radius / 2
         );
 
-        if (!res && this.#mouseWasInAttributesButton)
+        if (!res && this.mouseWasInAttributesButton)
             this.onAttributesButtonMouseLeave()
-        this.#mouseWasInAttributesButton = res;
+        this.mouseWasInAttributesButton = res;
         return res;
     }
 
     expansionToggleContains(x, y) {
-        if (this.children.length == 0 || (!this.#visible && this.parent != null && this.parent.#visible == false))
+        if (this.children.length == 0 || (!this.visible && this.parent != null && this.parent.visible == false))
             return false;
         var res = (
             Math.abs(x - (this.x - this.radius * 1.25)) <= this.radius / 2 &&
             Math.abs(y - this.y) <= this.radius / 2
         );
-        if (!res && this.#mouseWasInExpandableButton)
+        if (!res && this.mouseWasInExpandableButton)
             this.onExpansionToggleMouseLeave()
-        this.#mouseWasInExpandableButton = res;
+        this.mouseWasInExpandableButton = res;
         return res;
     }
 
     contains(x, y) {
-        if (!this.#visible && this.parent != null && this.parent.#visible == false) return false;
+        if (!this.visible && this.parent != null && this.parent.visible == false) return false;
         var res = (
             Math.abs(x - this.x) <= this.radius &&
             Math.abs(y - this.y) <= this.radius
         );
-        if (!res && this.#mouseWasInNode)
+        if (!res && this.mouseWasInNode)
             this.onMouseLeave()
-        this.#mouseWasInNode = res;
+        this.mouseWasInNode = res;
         return res;
     }
 
     onMouseHover() {
         canvas.style.cursor = "pointer";
-        this.#currentColor = this.#style["hover"]
+        this.currentColor = this.style["hover"]
     }
 
     onExpansionToggleMouseHover() {
         canvas.style.cursor = "pointer";
-        this.#expansionButtonCurrentColor = this.#expansionButtonStyle["hover"]
+        this.expansionButtonCurrentColor = this.expansionButtonStyle["hover"]
     }
 
     onAttributesButtonMouseHover() {
         canvas.style.cursor = "pointer";
-        this.#attributesButtonCurrentColor = this.#attributesButtonStyle["hover"]
+        this.attributesButtonCurrentColor = this.attributesButtonStyle["hover"]
     }
 
     onMouseLeave() {
         canvas.style.cursor = "default";
-        this.#currentColor = this.#style["regular"];
+        this.currentColor = this.style["regular"];
     }
 
     onExpansionToggleMouseLeave() {
         canvas.style.cursor = "default";
-        this.#expansionButtonCurrentColor = this.#expansionButtonStyle["regular"]
+        this.expansionButtonCurrentColor = this.expansionButtonStyle["regular"]
     }
 
     onAttributesButtonMouseLeave() {
         canvas.style.cursor = "default";
-        this.#attributesButtonCurrentColor = this.#attributesButtonStyle["regular"]
+        this.attributesButtonCurrentColor = this.attributesButtonStyle["regular"]
     }
 
     onAttributesButtonMouseClick(context) {
@@ -248,7 +249,7 @@ class CanvasNode {
     }
 
     onExpansionToggleMouseClick() {
-        if (this.#visible) this.hide()
+        if (this.visible) this.hide()
         else this.show()
     }
 
