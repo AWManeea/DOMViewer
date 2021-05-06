@@ -1,3 +1,12 @@
+h1{
+    padding: 2px;
+    background-color: snow;
+}
+body {
+    margin: 0;
+}
 #canvas {
     /* border: 5px solid slateblue; */
+    margin: 0;
+    background-color: #2C2A2E;
 }

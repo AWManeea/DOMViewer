@@ -2,83 +2,130 @@ let canvas = document.getElementById("canvas")
 canvas.width = window.innerWidth - 30;
 canvas.height = window.innerHeight * 10;
 
-let context = canvas.getContext('2d');
 context.textAlign = "center"
-context.font = `${circleSize*0.5}px monospace`;
-
+context.font = `${circleSize * 0.5}px monospace`;
 
 let maxWidth = canvas.clientWidth;
 let levelCurrentPosition = []
 let nodesPerLevel = []
 let pad = maxWidth * (screenPaddingPercentage / 100)
+let root;
+let tree = []
 
-draw(document.childNodes[1], 0, 0, 0)
-
-function draw(element, level, parent_x, parent_y) {
-    if (nodesPerLevel[level] === undefined) nodesPerLevel[level] = getNodesPerLevel(level);
-    if (nodesPerLevel[level + 1] === undefined) nodesPerLevel[level + 1] = getNodesPerLevel(level + 1);
-    if (levelCurrentPosition[level] === undefined) levelCurrentPosition[level] = 0;
-    if (element.nodeName == "#text" && element.data.trim() == "") return
+function createTree(node, level) {
+    if (!canDraw(node, level)) return;
     let cellSpace = (maxWidth - (2 * pad)) / nodesPerLevel[level]
-
-
-    let x = pad + (cellSpace / 2) + (levelCurrentPosition[level] * cellSpace)
-    let y = parent_y + (nodesPerLevel[level] * 0.1 + verticalOffset) * circleSize
-
-    if (parent_x > 0 && parent_y > 0) {
-        context.beginPath();
-        context.lineWidth = 2;
-        context.strokeStyle = "#999999";
-        context.moveTo(parent_x, parent_y + circleSize);
-        context.lineTo(x, y);
-        context.stroke()
-    }
-
-    context.beginPath();
-    context.lineWidth = 3;
-
-    if (element.nodeName == "#text") {
-        context.fillStyle = "#dddddd";
-        context.rect(x - circleSize, y - circleSize / 2, circleSize * 2, circleSize);
-        context.fill();
-    } else {
-        context.fillStyle = element.childNodes.length == 0 ? "#778899" : "#FFD700";
-        context.arc(x, y, circleSize, 0, 2 * Math.PI);
-        context.fill();
-    }
-
-    context.beginPath();
-    context.fillStyle = "black";
-    var nodeName = element.nodeName.replace(/#/g, '')
-    context.fillText(nodeName.toLowerCase(), x, y);
-    context.fill();
-
+    node.x = pad + (cellSpace / 2) + levelCurrentPosition[level] * cellSpace
+    node.y = (node.parent == null ? 0 : node.parent.y) + (nodesPerLevel[level] * 0.1 + verticalOffset) * circleSize
     levelCurrentPosition[level]++
-    for (let i = 0; i < element.childNodes.length; i++) {
-        draw(element.childNodes[i], level + 1, x, y)
+    for (let i = 0; i < node.element.childNodes.length; i++) {
+        if (node.element.childNodes[i].nodeType == Node.TEXT_NODE && node.element.childNodes[i].data.trim() == "") continue;
+        var child = new CanvasNode(node.element.childNodes[i], node, 0, 0)
+        node.children.push(child)
+        createTree(child, level + 1)
     }
 }
 
-function getNodesPerLevel(row) {
-    return row <= 0 ? 1 : _getNodesPerLevel(document, row)
+function redraw() {
+    if (tree.length == 0) {
+        root = new CanvasNode(document.childNodes[1]);
+        createTree(root, 0)
+    }
+    context.clearRect(0, 0, maxWidth, canvas.height)
+    root.recursiveDraw(context)
+    tree = root.toArray()
 }
 
-function _getNodesPerLevel(e, row) {
-    if (row == 0)
-        return "childNodes" in e ? nonEmptyNodes(e) : 0;
+function getNodesPerLevel(level) {
+    return level <= 0 ? 1 : _getNodesPerLevel(document, level)
+}
+
+function _getNodesPerLevel(e, level) {
+    if (level == 0)
+        if ("childNodes" in e)
+            return nonEmptyNodes(e)
+        else
+            return 0;
     else if (!("childNodes" in e))
         return 0;
     var total = 0
     for (let i = 0; i < e.childNodes.length; i++)
-        total += _getNodesPerLevel(e.childNodes[i], row - 1)
+        total += _getNodesPerLevel(e.childNodes[i], level - 1)
     return total;
 }
 
 function nonEmptyNodes(e) {
     let total = 0
     for (let i = 0; i < e.childNodes.length; i++) {
-        if (e.childNodes[i].nodeName == "#text" && e.childNodes[i].data.trim() == "") continue;
+        if (e.childNodes[i].nodeType == Node.TEXT_NODE && e.childNodes[i].data.trim() == "") continue;
         else total++;
     }
     return total;
 }
+
+function getGradientColor(x, y, s) {
+    var g = context.createLinearGradient(x - s, y - s, x + s, y + s);
+    g.addColorStop(0, '#56B9E5');
+    g.addColorStop(.35, '#A2D7EE');
+    g.addColorStop(1, '#59BFEB');
+    return g
+}
+
+function canDraw(node, level) {
+    if (nodesPerLevel[level] === undefined)
+        nodesPerLevel[level] = getNodesPerLevel(level);
+    if (levelCurrentPosition[level] === undefined)
+        levelCurrentPosition[level] = 0;
+    if (node.element.nodeType == Node.TEXT_NODE && node.element.data.trim() == "")
+        return false
+    return true;
+}
+
+function mouseMove(e) {
+    for (let i = 0; i < tree.length; i++) {
+        if (tree[i].attributesButtonContains(e.offsetX, e.offsetY)) {
+            tree[i].onAttributesButtonMouseHover()
+            redraw(root)
+            return;
+        } else if (tree[i].expansionToggleContains(e.offsetX, e.offsetY)) {
+            tree[i].onExpansionToggleMouseHover()
+            redraw(root)
+            return;
+        } else if (tree[i].contains(e.offsetX, e.offsetY)) {
+            tree[i].onMouseHover()
+            redraw(root)
+            tree[i].drawInnerHTML(context)
+            return;
+        }
+    }
+    redraw(root)
+}
+
+function mouseClick(e) {
+    for (let i = 0; i < tree.length; i++) {
+        if (tree[i].attributesButtonContains(e.offsetX, e.offsetY)) {
+            redraw(root)
+            tree[i].onAttributesButtonMouseClick(context)
+            return;
+        } else if (tree[i].expansionToggleContains(e.offsetX, e.offsetY)) {
+            tree[i].onExpansionToggleMouseClick()
+            redraw(root)
+            return;
+        } else if (tree[i].contains(e.offsetX, e.offsetY)) {
+            tree[i].onMouseClick()
+            redraw(root)
+            return;
+        }
+    }
+    redraw(root)
+}
+
+
+redraw();
+canvas.addEventListener("mousemove", mouseMove);
+canvas.addEventListener("click", mouseClick);
+// canvas.addEventListener("mousemove", mouseMove);
+// canvas.addEventListener("mousemove", mouseMove);
+// canvas.addEventListener("mousemove", mouseMove);
+// canvas.addEventListener("mousemove", mouseMove);
+// canvas.addEventListener("mousemove", mouseMove);
