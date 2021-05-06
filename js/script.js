@@ -97,10 +97,7 @@ function mouseMove(e) {
         canvas.style.cursor = "default"
     }
     for (let i = 0; i < tree.length; i++) {
-        // if(mouseDown) {
-
-        // } else
-         if (tree[i].attributesButtonContains(e.offsetX, e.offsetY)) {
+        if (tree[i].attributesButtonContains(e.offsetX, e.offsetY)) {
             tree[i].onAttributesButtonMouseHover()
             redraw(root)
             return;
@@ -109,10 +106,15 @@ function mouseMove(e) {
             redraw(root)
             return;
         } else if (tree[i].contains(e.offsetX, e.offsetY)) {
-            tree[i].onMouseHover()
-            redraw(root)
-            tree[i].drawInnerHTML(context)
-            return;
+            if (tree[i].mouseDown) {
+                canvas.style.cursor = "grabbing"
+                tree[i].updateX(e.offsetX)
+            } else {
+                tree[i].onMouseHover()
+                redraw(root)
+                tree[i].drawInnerHTML(context)
+                return;
+            }
         }
     }
     redraw(root)
@@ -154,14 +156,17 @@ function mouseClick(e) {
 function mouseDown(e) {
     for (let i = 0; i < tree.length; i++) {
         if (tree[i].contains(e.offsetX, e.offsetY)) {
-            tree[i].onMouseClick()
+            tree[i].onMouseDown()
             return;
+        } else {
+            tree[i].onMouseUp();
         }
     }
 }
 
 function mouseUp(e) {
-    
+    for (let i = 0; i < tree.length; i++)
+        tree[i].onMouseUp();
 }
 
 function inSaveImage(x, y) {
@@ -173,6 +178,6 @@ function inSaveImage(x, y) {
 
 redraw();
 canvas.addEventListener("mousemove", mouseMove);
-// canvas.addEventListener("mouseup", mouseUp);
-// canvas.addEventListener("mousedown", mouseDown);
+canvas.addEventListener("mouseup", mouseUp);
+canvas.addEventListener("mousedown", mouseDown);
 canvas.addEventListener("click", mouseClick);

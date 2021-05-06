@@ -16,6 +16,7 @@ class CanvasNode {
     mouseWasInExpandableButton
     mouseWasInAttributesButton
     mouseWasInNode
+    showPrompt
 
     constructor(element, parent = null, x = 0, y = 0, radius = circleSize) {
         this.element = element;
@@ -29,6 +30,7 @@ class CanvasNode {
         this.mouseWasInAttributesButton = false;
         this.mouseDown = false;
         this.mouseWasInNode = false;
+        this.showPrompt = false;
         this.expansionButtonStyle = expansionStyle
         this.attributesButtonStyle = attributesStyle
         this.expansionButtonCurrentColor = this.expansionButtonStyle["regular"]
@@ -255,6 +257,7 @@ class CanvasNode {
     }
 
     onMouseClick() {
+        if(!this.showPrompt) {this.showPrompt = true; retrn}
         let tag = prompt("What tag would you like to add?")
         tag = tag.trim().toLowerCase()
         let node;
@@ -272,6 +275,21 @@ class CanvasNode {
             this.element.appendChild(p)
         }
         tree = []
+    }
+
+    onMouseDown(){
+        canvas.style.cursor = "grabbing"
+        this.mouseDown = true;
+    }
+
+    onMouseUp(){
+        canvas.style.cursor = "default"
+        this.mouseDown = false;
+    }
+
+    updateX(x){
+        this.x = x;
+        this.showPrompt = false;
     }
 
     toString() {
