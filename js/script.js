@@ -28,9 +28,10 @@ function createTree(node, level) {
 }
 
 function redraw() {
-    
     if (tree.length == 0) {
-        // Adjust canvas height
+        tree = []
+        levelCurrentPosition = []
+        nodesPerLevel = []
         root = new CanvasNode(document.childNodes[1]);
         createTree(root, 0)
     }
@@ -89,7 +90,7 @@ function canDraw(node, level) {
 }
 
 function mouseMove(e) {
-    if(inSaveImage(e.offsetX, e.offsetY)){
+    if (inSaveImage(e.offsetX, e.offsetY)) {
         canvas.style.cursor = "pointer"
         return
     } else {
@@ -115,10 +116,10 @@ function mouseMove(e) {
 }
 
 function mouseClick(e) {
-    if(inSaveImage(e.offsetX, e.offsetY)){
+    if (inSaveImage(e.offsetX, e.offsetY)) {
         canvas.style.cursor = "pointer"
-        var dataURL =canvas.toDataURL("image/png");
-        var newTab = window.open('about:blank','image from canvas');
+        var dataURL = canvas.toDataURL("image/png");
+        var newTab = window.open('about:blank', 'image from canvas');
         newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>")
         return
     } else {
@@ -148,6 +149,7 @@ function inSaveImage(x, y) {
         y <= circleSize * 2
     );
 }
+
 redraw();
 canvas.addEventListener("mousemove", mouseMove);
 canvas.addEventListener("click", mouseClick);

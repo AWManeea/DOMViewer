@@ -35,7 +35,7 @@ class CanvasNode {
             this.#style = textStyles;
         else if ("childNodes" in this.element && this.element.childNodes.length == 0)
             this.#style = leafStyles;
-        else 
+        else
             this.#style = nodeStyles;
         this.#currentColor = this.#style["regular"]
         this.#expansionButtonCurrentColor = this.#expansionButtonStyle["regular"]
@@ -74,7 +74,7 @@ class CanvasNode {
     }
 
     drawElement(context) {
-        context.fillStyle=this.#currentColor
+        context.fillStyle = this.#currentColor
         context.beginPath();
         if (this.element.nodeType == Node.TEXT_NODE) {
             context.rect(this.x - circleSize, this.y - circleSize / 2, circleSize * 2, circleSize);
@@ -98,53 +98,53 @@ class CanvasNode {
         this.#drawAttributesButton(context)
     }
 
-    drawInnerHTML(context){
-        if(this.element.innerHTML == null || this.element.innerHTML.length == 0) return 
+    drawInnerHTML(context) {
+        if (this.element.innerHTML == null || this.element.innerHTML.length == 0) return
         let maxWidth = canvas.clientWidth;
         let pad = maxWidth * (screenPaddingPercentage / 100)
-        let y = this.y; 
+        let y = this.y;
         let arr = this.element.innerHTML.split("\n");
         let longestLine = arr.reduce((r, e) => r.length < e.length ? e : r, "");
-        let width = context.measureText(longestLine).width +pad*3
-        context.textAlign="left"
+        let width = context.measureText(longestLine).width + pad * 3
+        context.textAlign = "left"
         context.beginPath();
-        context.rect(pad, y-pad, width, arr.length*this.radius/1.5 + pad*2);
+        context.rect(pad, y - pad, width, arr.length * this.radius / 1.5 + pad * 2);
         context.fillStyle = "rgba(0,0,0,0.5)"
         context.fill();
         context.beginPath();
-        
+
         context.fillStyle = "white"
         for (let i = 0; i < arr.length; i++) {
-            context.fillText(arr[i], pad*2, y, width);
-            y+=this.radius/1.5           
+            context.fillText(arr[i], pad * 2, y, width);
+            y += this.radius / 1.5
         }
         context.fill();
-        context.textAlign="center"
+        context.textAlign = "center"
     }
 
-    drawAttributes(context){
+    drawAttributes(context) {
         let maxWidth = canvas.clientWidth;
         let pad = maxWidth * (screenPaddingPercentage / 100)
-        let x = this.x>maxWidth/2?pad:maxWidth/2 - pad*3;
-        let y = this.y; 
-        let width = maxWidth/2 +pad*2
-        let height = this.element.attributes.length*this.radius/1.5 +pad*2
+        let x = this.x > maxWidth / 2 ? pad : maxWidth / 2 - pad * 3;
+        let y = this.y;
+        let width = maxWidth / 2 + pad * 2
+        let height = this.element.attributes.length * this.radius / 1.5 + pad * 2
 
         context.beginPath();
-        context.rect(x, y-pad, width, this.element.attributes.length*this.radius/1.5 + pad*2);
+        context.rect(x, y - pad, width, this.element.attributes.length * this.radius / 1.5 + pad * 2);
         context.fillStyle = "rgba(255,255,255,0.75)"
         context.fill();
 
         context.beginPath();
-        context.textAlign="left"
+        context.textAlign = "left"
         context.fillStyle = "black"
 
         for (let i = 0; i < this.element.attributes.length; i++) {
-            context.fillText(`${this.element.attributes[i].name}: ${this.element.attributes[i].value}`, x+pad, y, width);
-            y+=this.radius/1.5  
+            context.fillText(`${this.element.attributes[i].name}: ${this.element.attributes[i].value}`, x + pad, y, width);
+            y += this.radius / 1.5
         }
         context.fill();
-        context.textAlign="center"
+        context.textAlign = "center"
     }
 
     drawExpansionToggle(context) {
@@ -181,7 +181,7 @@ class CanvasNode {
             x >= this.x - this.radius * 1.5 &&
             y >= this.y + this.radius / 2 &&
             x <= this.x - this.radius * 1.5 + this.radius &&
-            y <= this.y + this.radius / 2 +  this.radius/2
+            y <= this.y + this.radius / 2 + this.radius / 2
         );
 
         if (!res && this.#mouseWasInAttributesButton)
@@ -204,7 +204,7 @@ class CanvasNode {
     }
 
     contains(x, y) {
-        if(!this.visible && this.parent != null && this.parent.visible == false) return false;
+        if (!this.visible && this.parent != null && this.parent.visible == false) return false;
         var res = (
             Math.abs(x - this.x) <= this.radius &&
             Math.abs(y - this.y) <= this.radius
@@ -217,7 +217,7 @@ class CanvasNode {
 
     onMouseHover() {
         canvas.style.cursor = "pointer";
-        this.#currentColor=this.#style["hover"]
+        this.#currentColor = this.#style["hover"]
     }
 
     onExpansionToggleMouseHover() {
@@ -228,11 +228,11 @@ class CanvasNode {
     onAttributesButtonMouseHover() {
         canvas.style.cursor = "pointer";
         this.#attributesButtonCurrentColor = this.#attributesButtonStyle["hover"]
-    } 
+    }
 
     onMouseLeave() {
         canvas.style.cursor = "default";
-        this.#currentColor=this.#style["regular"];
+        this.#currentColor = this.#style["regular"];
     }
 
     onExpansionToggleMouseLeave() {
@@ -243,7 +243,7 @@ class CanvasNode {
     onAttributesButtonMouseLeave() {
         canvas.style.cursor = "default";
         this.#attributesButtonCurrentColor = this.#attributesButtonStyle["regular"]
-    } 
+    }
 
     onAttributesButtonMouseClick(context) {
         this.drawAttributes(context)
@@ -255,6 +255,23 @@ class CanvasNode {
     }
 
     onMouseClick() {
+        let tag = prompt("What tag would you like to add?")
+        tag = tag.trim().toLowerCase()
+        let node;
+        console.log(tag)
+        if (tagNames.includes(tag)) {
+            node = document.createElement(tag)
+        } else {
+            node = document.createTextNode(tag);
+        }
+        try {
+            this.element.appendChild(node)
+        } catch (e) {
+            let p = document.createElement("p")
+            p.appendChild(node)
+            this.element.appendChild(p)
+        }
+        tree = []
     }
 
     toString() {
