@@ -136,11 +136,11 @@ class CanvasNode {
         let x = this.x > maxWidth / 2 ? pad : maxWidth / 2 - pad * 3;
         let y = this.y;
         let width = maxWidth / 2 + pad * 2
-        let height = this.element.attributes.length * this.radius / 1.5 + pad * 2
-        names = () => {a=this.element.attributes;x=[]; for(var i=0;i<a.length;i++)x.push(a[i].name); return x;}
-        values = () => {a=this.element.attributes;x=[]; for(var i=0;i<a.length;i++)x.push(a[i].value); return x;}
-        let keyBorderWidth = pad*2 +
-            names().reduce((r, e) => r.length < e.length ? e : r, "");
+        // let height = this.element.attributes.length * this.radius / 1.5 + pad * 2
+        // names = () => {a=this.element.attributes;x=[]; for(var i=0;i<a.length;i++)x.push(a[i].name); return x;}
+        // values = () => {a=this.element.attributes;x=[]; for(var i=0;i<a.length;i++)x.push(a[i].value); return x;}
+        // let keyBorderWidth = pad*2 +
+            // names().reduce((r, e) => r.length < e.length ? e : r, "");
         context.beginPath();
         context.rect(x, y - pad, width, this.element.attributes.length * this.radius / 1.5 + pad * 2);
         context.fillStyle = "rgba(255,255,255,0.75)"
@@ -156,7 +156,7 @@ class CanvasNode {
         }
         context.fill();
         context.textAlign = "center"
-        this.drawAttributeKeyValue(context, this.x, this.y, width, 40)
+        // this.drawAttributeKeyValue(context, this.x, this.y, width, 40)
     }
 
     drawAttributeKeyValue(context, x, y){
