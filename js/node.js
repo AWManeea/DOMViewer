@@ -5,7 +5,7 @@ class CanvasNode {
     element;
     parent;
     children;
-    // mouse down
+    mouseDown
     visible;
     style
     expansionButtonStyle
@@ -27,6 +27,7 @@ class CanvasNode {
         this.visible = true;
         this.mouseWasInExpandableButton = false;
         this.mouseWasInAttributesButton = false;
+        this.mouseDown = false;
         this.mouseWasInNode = false;
         this.expansionButtonStyle = expansionStyle
         this.attributesButtonStyle = attributesStyle
@@ -98,11 +99,11 @@ class CanvasNode {
     }
 
     drawInnerHTML(context) {
-        if (this.element.innerHTML == null || this.element.innerHTML.length == 0) return
+        if (this.element.outerHTML == null || this.element.outerHTML.length == 0) return
         let maxWidth = canvas.clientWidth;
         let pad = maxWidth * (screenPaddingPercentage / 100)
         let y = this.y;
-        let arr = this.element.innerHTML.split("\n");
+        let arr = this.element.outerHTML.split("\n");
         let longestLine = arr.reduce((r, e) => r.length < e.length ? e : r, "");
         let width = context.measureText(longestLine).width + pad * 3
         context.textAlign = "left"
