@@ -100,12 +100,14 @@ class CanvasNode {
         this.drawAttributesButton(context)
     }
 
-    drawInnerHTML(context) {
-        if (this.element.outerHTML == null || this.element.outerHTML.length == 0) return
+    drawOuterHTML(context) {
+        var text; 
+        if (this.element.outerHTML == null || this.element.outerHTML.length == 0) text=this.element.data
+        else text=this.element.outerHTML
         let maxWidth = canvas.clientWidth;
         let pad = maxWidth * (screenPaddingPercentage / 100)
         let y = this.y;
-        let arr = this.element.outerHTML.split("\n");
+        let arr = text.split("\n");
         let longestLine = arr.reduce((r, e) => r.length < e.length ? e : r, "");
         let width = context.measureText(longestLine).width + pad * 3
         context.textAlign = "left"
@@ -257,8 +259,9 @@ class CanvasNode {
     }
 
     onMouseClick() {
-        if(!this.showPrompt) {this.showPrompt = true; retrn}
+        if(!this.showPrompt) {this.showPrompt = true; return}
         let tag = prompt("What tag would you like to add?")
+        if(tag == null) return
         tag = tag.trim().toLowerCase()
         let node;
         console.log(tag)

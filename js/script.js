@@ -112,7 +112,7 @@ function mouseMove(e) {
             } else {
                 tree[i].onMouseHover()
                 redraw(root)
-                tree[i].drawInnerHTML(context)
+                tree[i].drawOuterHTML(context)
                 return;
             }
         }
