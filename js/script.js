@@ -1,10 +1,11 @@
 let canvas = document.getElementById("canvas")
 canvas.width = window.innerWidth - 30;
-canvas.height = window.innerHeight * 10;
+canvas.height = window.innerHeight * 2;
 
 context.textAlign = "center"
 context.font = `${circleSize * 0.5}px monospace`;
 
+let saveImg = document.getElementById("save-img")
 let maxWidth = canvas.clientWidth;
 let levelCurrentPosition = []
 let nodesPerLevel = []
@@ -27,13 +28,19 @@ function createTree(node, level) {
 }
 
 function redraw() {
+    
     if (tree.length == 0) {
+        // Adjust canvas height
         root = new CanvasNode(document.childNodes[1]);
         createTree(root, 0)
     }
     context.clearRect(0, 0, maxWidth, canvas.height)
     root.recursiveDraw(context)
     tree = root.toArray()
+
+    // Save button
+    context.drawImage(saveImg, canvas.width - circleSize * 2, 0, circleSize * 2, circleSize * 2);
+    context.fill()
 }
 
 function getNodesPerLevel(level) {
@@ -82,6 +89,12 @@ function canDraw(node, level) {
 }
 
 function mouseMove(e) {
+    if(inSaveImage(e.offsetX, e.offsetY)){
+        canvas.style.cursor = "pointer"
+        return
+    } else {
+        canvas.style.cursor = "default"
+    }
     for (let i = 0; i < tree.length; i++) {
         if (tree[i].attributesButtonContains(e.offsetX, e.offsetY)) {
             tree[i].onAttributesButtonMouseHover()
@@ -102,6 +115,15 @@ function mouseMove(e) {
 }
 
 function mouseClick(e) {
+    if(inSaveImage(e.offsetX, e.offsetY)){
+        canvas.style.cursor = "pointer"
+        var dataURL =canvas.toDataURL("image/png");
+        var newTab = window.open('about:blank','image from canvas');
+        newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>")
+        return
+    } else {
+        canvas.style.cursor = "default"
+    }
     for (let i = 0; i < tree.length; i++) {
         if (tree[i].attributesButtonContains(e.offsetX, e.offsetY)) {
             redraw(root)
@@ -120,7 +142,12 @@ function mouseClick(e) {
     redraw(root)
 }
 
-
+function inSaveImage(x, y) {
+    return (
+        x >= canvas.width - circleSize * 2 &&
+        y <= circleSize * 2
+    );
+}
 redraw();
 canvas.addEventListener("mousemove", mouseMove);
 canvas.addEventListener("click", mouseClick);
