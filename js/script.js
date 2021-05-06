@@ -117,10 +117,15 @@ function mouseMove(e) {
 
 function mouseClick(e) {
     if (inSaveImage(e.offsetX, e.offsetY)) {
-        canvas.style.cursor = "pointer"
-        var dataURL = canvas.toDataURL("image/png");
-        var newTab = window.open('about:blank', 'image from canvas');
-        newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>")
+        var anchor=document.createElement("a")
+        anchor.setAttribute('download', 'MintyPaper.png');
+        anchor.setAttribute('href', canvas.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+        document.getElementsByTagName("body")[0].appendChild(anchor)
+        anchor.click()
+        
+        // var dataURL = canvas.toDataURL("image/png");
+        // var newTab = window.open('about:blank', 'image from canvas');
+        // newTab.document.write("<img src='" + dataURL + "' alt='from canvas'/>")
         return
     } else {
         canvas.style.cursor = "default"
