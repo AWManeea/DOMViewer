@@ -2,11 +2,10 @@ class CanvasNode {
     x;
     y;
     radius;
-    style;
     element;
     parent;
     children;
-    visible;
+    #visible;
     #style
     #expansionButtonStyle
     #attributesButtonStyle
@@ -24,13 +23,14 @@ class CanvasNode {
         this.radius = radius;
         this.children = [];
         this.parent = parent;
-        this.visible = true;
+        this.#visible = true;
         this.#mouseWasInExpandableButton = false;
         this.#mouseWasInAttributesButton = false;
         this.#mouseWasInNode = false;
         this.#expansionButtonStyle = expansionStyle
         this.#attributesButtonStyle = attributesStyle
-
+        this.#expansionButtonCurrentColor = this.#expansionButtonStyle["regular"]
+        this.#attributesButtonCurrentColor = this.#attributesButtonStyle["regular"]
         if (this.element.nodeType == Node.TEXT_NODE)
             this.#style = textStyles;
         else if ("childNodes" in this.element && this.element.childNodes.length == 0)
@@ -38,8 +38,6 @@ class CanvasNode {
         else
             this.#style = nodeStyles;
         this.#currentColor = this.#style["regular"]
-        this.#expansionButtonCurrentColor = this.#expansionButtonStyle["regular"]
-        this.#attributesButtonCurrentColor = this.#attributesButtonStyle["regular"]
     }
 
     draw(context) {
@@ -49,18 +47,18 @@ class CanvasNode {
 
     recursiveDraw(context) {
         this.draw(context)
-        if (this.visible)
+        if (this.#visible)
             this.children.forEach(node => node.recursiveDraw(context))
     }
 
     hide() {
-        this.visible = false;
+        this.#visible = false;
         this.children.forEach(node => node.hide());
     }
 
     show() {
-        this.visible = true;
-        this.children.forEach(node => { node.visible = true; node.show(); });
+        this.#visible = true;
+        this.children.forEach(node => { node.#visible = true; node.show(); });
     }
 
     drawLineToParent(context) {
@@ -155,7 +153,7 @@ class CanvasNode {
         context.fill();
         context.beginPath();
         context.fillStyle = "black";
-        context.fillText(this.visible ? "-" : "+", this.x - this.radius * 1.25, this.y);
+        context.fillText(this.#visible ? "-" : "+", this.x - this.radius * 1.25, this.y);
         context.fill()
     }
 
@@ -191,7 +189,7 @@ class CanvasNode {
     }
 
     expansionToggleContains(x, y) {
-        if (this.children.length == 0 || (!this.visible && this.parent != null && this.parent.visible == false))
+        if (this.children.length == 0 || (!this.#visible && this.parent != null && this.parent.#visible == false))
             return false;
         var res = (
             Math.abs(x - (this.x - this.radius * 1.25)) <= this.radius / 2 &&
@@ -204,7 +202,7 @@ class CanvasNode {
     }
 
     contains(x, y) {
-        if (!this.visible && this.parent != null && this.parent.visible == false) return false;
+        if (!this.#visible && this.parent != null && this.parent.#visible == false) return false;
         var res = (
             Math.abs(x - this.x) <= this.radius &&
             Math.abs(y - this.y) <= this.radius
@@ -250,7 +248,7 @@ class CanvasNode {
     }
 
     onExpansionToggleMouseClick() {
-        if (this.visible) this.hide()
+        if (this.#visible) this.hide()
         else this.show()
     }
 

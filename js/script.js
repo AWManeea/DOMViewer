@@ -153,8 +153,3 @@ function inSaveImage(x, y) {
 redraw();
 canvas.addEventListener("mousemove", mouseMove);
 canvas.addEventListener("click", mouseClick);
-// canvas.addEventListener("mousemove", mouseMove);
-// canvas.addEventListener("mousemove", mouseMove);
-// canvas.addEventListener("mousemove", mouseMove);
-// canvas.addEventListener("mousemove", mouseMove);
-// canvas.addEventListener("mousemove", mouseMove);
