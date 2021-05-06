@@ -3,7 +3,7 @@ let context = document.getElementById("canvas").getContext('2d');
 let circleSize = 35;
 let circleMargin = 10;
 let screenPaddingPercentage = 1;
-let verticalOffset = 3;
+let verticalOffset = 5;
 
 
 let tagColor = "gold"

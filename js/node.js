@@ -114,14 +114,16 @@ class CanvasNode {
         let width = context.measureText(longestLine).width + pad * 3
         context.textAlign = "left"
         context.beginPath();
-        context.rect(pad, y - pad, width, arr.length * this.radius / 1.5 + pad * 2);
+        var start = this.x
+        while(start+width > maxWidth-pad) start--;
+        context.rect(start, y - pad, width, arr.length * this.radius / 1.5 + pad * 2);
         context.fillStyle = "rgba(0,0,0,0.5)"
         context.fill();
         context.beginPath();
 
         context.fillStyle = "white"
         for (let i = 0; i < arr.length; i++) {
-            context.fillText(arr[i], pad * 2, y, width);
+            context.fillText(arr[i], start+pad, y, width);
             y += this.radius / 1.5
         }
         context.fill();
@@ -135,7 +137,10 @@ class CanvasNode {
         let y = this.y;
         let width = maxWidth / 2 + pad * 2
         let height = this.element.attributes.length * this.radius / 1.5 + pad * 2
-
+        names = () => {a=this.element.attributes;x=[]; for(var i=0;i<a.length;i++)x.push(a[i].name); return x;}
+        values = () => {a=this.element.attributes;x=[]; for(var i=0;i<a.length;i++)x.push(a[i].value); return x;}
+        let keyBorderWidth = pad*2 +
+            names().reduce((r, e) => r.length < e.length ? e : r, "");
         context.beginPath();
         context.rect(x, y - pad, width, this.element.attributes.length * this.radius / 1.5 + pad * 2);
         context.fillStyle = "rgba(255,255,255,0.75)"
@@ -151,8 +156,19 @@ class CanvasNode {
         }
         context.fill();
         context.textAlign = "center"
+        this.drawAttributeKeyValue(context, this.x, this.y, width, 40)
     }
 
+    drawAttributeKeyValue(context, x, y){
+        context.fillStyle = "#577D7D"
+        context.rect(x-10,y-10,100)
+        context.fill()
+        
+        context.fillStyle = "#B1FCFC"
+        context.rect(x,y,this.size*2,100)
+        context.fill()
+        return y+10;
+    }
     drawExpansionToggle(context) {
         if (this.children.length == 0) return
         context.beginPath();
